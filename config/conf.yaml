@@ -1,0 +1,10 @@
+mqtt_username: "user"
+mqtt_password: "pass"
+mqtt_client_name: "mqtt_to_system_command"
+mqtt_host: "localhost"
+mqtt_port: 1883
+arbitrary_command_topic: "mqtt_to_system_command/command"
+command_index_topic: "mqtt_to_system_command/command_index"
+commands:
+  - "dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.PowerOff boolean:true"
+  - "dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager.Reboot boolean:true"
