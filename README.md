@@ -1,6 +1,6 @@
 # MQTT to system command
 
-Trigger system commands execute through MQTT.
+Trigger system command execution through MQTT.
 
 ## Two modes of operation
 
