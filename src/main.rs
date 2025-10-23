@@ -1,7 +1,6 @@
 use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
 use std::{fs, process::Command, time::Duration};
 use tokio::time;
-
 mod structs;
 
 fn run_command(command: &String) {
@@ -22,8 +21,14 @@ fn run_command(command: &String) {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let yaml = fs::read_to_string("config/conf.yaml")?;
-    let config: structs::MQTT2SCConfig = serde_yaml::from_str(&yaml)?;
+    let args: Vec<String> = std::env::args().collect();
+    let yaml: String;
+    if args.len() > 1 {
+        yaml = fs::read_to_string(&args[1]).unwrap_or_default();
+    } else {
+        yaml = fs::read_to_string("config/conf.yaml").unwrap_or_default();
+    }
+    let config: structs::MQTT2SCConfig = serde_yaml::from_str(&yaml).unwrap_or_default();
 
     let mut mqttoptions = MqttOptions::new(
         config.mqtt_client_name.unwrap_or_default(),

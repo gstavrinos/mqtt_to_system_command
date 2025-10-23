@@ -19,4 +19,6 @@ Trigger system command execution through MQTT.
 * `command_index_topic`: String that contains the topic to listen to for a command index. Defaults to `mqtt_to_system_command/command_index`
 * `commands`: Vector of strings that contain the predefined commands to be executed based on the received index. Empty by default. The `command_index_topic` is not subscribed to if the `commands` parameter is empty
 
-Note: Currently, the input configuration `yaml` file is not configurable. The code expects to find a configuration file in `config/conf.yaml`.
+## Command line arguments
+
+Optionally, the first command line argument is the `yaml` configuration file. It defaults to `config/conf.yaml`.
