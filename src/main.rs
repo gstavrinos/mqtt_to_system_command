@@ -3,20 +3,20 @@ use std::{fs, process::Command, time::Duration};
 use tokio::time;
 mod structs;
 
-fn run_command(command: &String) {
-    let mut parts = command.split_whitespace();
-    if let Some(program) = parts.next() {
-        let args: Vec<&str> = parts.collect();
-        let program = program.to_string();
-        let args = args.iter().map(|s| s.to_string()).collect::<Vec<_>>();
-        tokio::spawn(async move {
-            let status = Command::new(&program).args(&args).status();
-            match status {
-                Ok(s) => println!("Command exited with: {}", s),
-                Err(e) => eprintln!("Failed to run command: {}", e),
-            }
-        });
-    }
+fn run_command(command: &String, shell: &String, shell_flag: &String) {
+    let command_clone = command.clone();
+    let shell_clone = shell.clone();
+    let shell_flag_clone = shell_flag.clone();
+    tokio::spawn(async move {
+        let status = Command::new(shell_clone)
+            .arg(shell_flag_clone)
+            .arg(command_clone)
+            .status();
+        match status {
+            Ok(s) => println!("Command exited with: {}", s),
+            Err(e) => eprintln!("Failed to run command: {}", e),
+        }
+    });
 }
 
 #[tokio::main]
@@ -42,6 +42,17 @@ async fn main() -> anyhow::Result<()> {
             config.mqtt_password.unwrap_or_default(),
         );
     }
+    let shell = if cfg!(target_os = "windows") {
+        String::from("cmd")
+    } else {
+        String::from("sh")
+    };
+
+    let flag = if cfg!(target_os = "windows") {
+        String::from("/C")
+    } else {
+        String::from("-c")
+    };
 
     let (client, mut eventloop) = AsyncClient::new(mqttoptions, 10);
 
@@ -58,7 +69,7 @@ async fn main() -> anyhow::Result<()> {
                         if idx < commands_clone.len() {
                             let command = &commands_clone[idx];
                             println!("Running index {} -> {}", idx, command);
-                            run_command(command);
+                            run_command(command, &shell, &flag);
                         } else {
                             eprintln!(
                                 "Received index {} out of range (0..{})",
@@ -70,7 +81,7 @@ async fn main() -> anyhow::Result<()> {
                         eprintln!("Invalid index payload: {}", payload);
                     }
                 } else if topic == arbitrary_command_topic_clone {
-                    run_command(&payload.clone());
+                    run_command(&payload.clone(), &shell, &flag);
                 }
             }
             Ok(Event::Incoming(Packet::ConnAck(_))) => {
