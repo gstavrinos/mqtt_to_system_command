@@ -2,6 +2,13 @@
 name = "mqtt_to_system_command"
 version = "0.9.0"
 edition = "2024"
+license = "Apache-2.0"
+keywords = ["mqtt", "system", "commands", "shell"]
+categories = ["command-line-utilities"]
+description = "An MQTT client that runs command line commands based on a configuration file or arbitrary input."
+readme = "README.md"
+homepage = "https://github.com/gstavrinos/mqtt_to_system_command/"
+repository = "https://github.com/gstavrinos/mqtt_to_system_command/"
 
 [dependencies]
 anyhow = "1.0.100"
